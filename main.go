@@ -1,6 +1,10 @@
 package main
 
 import (
+	"strconv"
+
+	"github.com/valyala/fasthttp"
+
 	"github.com/vadim-dmitriev/music-fs-web-interface/common"
 	"github.com/vadim-dmitriev/music-fs-web-interface/dir"
 )
@@ -26,6 +30,19 @@ func main() {
 
 	if service.root, err = dir.NewTree(service.cfg.MusicDir); err != nil {
 		panic(err)
+	}
+
+	service.Run()
+
+}
+
+func (s *service) Run() {
+	var hostAndPort = s.cfg.Server.Listen + ":" + strconv.Itoa(s.cfg.Server.Port)
+
+	s.logger.Info("Server running on " + hostAndPort)
+
+	if err := fasthttp.ListenAndServe(hostAndPort, newRouter()); err != nil {
+		s.logger.Fatal(err.Error())
 	}
 
 }
