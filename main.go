@@ -5,14 +5,21 @@ import (
 	"github.com/vadim-dmitriev/music-fs-web-interface/dir"
 )
 
+// service это главный агрегатор
+type service struct {
+	cfg  *common.Config
+	root *dir.Node
+}
+
 func main() {
-	cfg, err := common.NewConfig()
-	if err != nil {
+	var service = new(service)
+	var err error
+
+	if service.cfg, err = common.NewConfig(); err != nil {
 		panic(err)
 	}
 
-	_, err = dir.NewTree(cfg.MusicDir)
-	if err != nil {
+	if service.root, err = dir.NewTree(service.cfg.MusicDir); err != nil {
 		panic(err)
 	}
 
