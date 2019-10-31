@@ -7,8 +7,9 @@ import (
 
 // service это главный агрегатор
 type service struct {
-	cfg  *common.Config
-	root *dir.Node
+	cfg    *common.Config
+	logger *common.Logger
+	root   *dir.Node
 }
 
 func main() {
@@ -16,6 +17,10 @@ func main() {
 	var err error
 
 	if service.cfg, err = common.NewConfig(); err != nil {
+		panic(err)
+	}
+
+	if service.logger, err = common.NewLogger(service.cfg); err != nil {
 		panic(err)
 	}
 
