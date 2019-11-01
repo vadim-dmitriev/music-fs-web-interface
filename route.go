@@ -2,26 +2,27 @@ package main
 
 import (
 	"encoding/json"
+	"net/http"
 
-	"github.com/buaazp/fasthttprouter"
-	"github.com/valyala/fasthttp"
+	"github.com/julienschmidt/httprouter"
 )
 
-func newRouter() fasthttp.RequestHandler {
-	router := fasthttprouter.New()
-
-	// router.ServeFiles("/*filepath", "static")
-	router.ServeFiles("/*filepath", "static")
+func newRouter() *http.ServeMux {
+	mux := http.NewServeMux()
 
 	// API
-	// router.GET("/api/v1/authors", getAuthors)
-	// router.GET("/api/v1/authors/:author/albums", getAlbums)
-	// router.GET("/api/v1/authors/:author/albums/:album/songs", getSongs)
+	router := httprouter.New()
+	router.GET("/api/v1/authors", getAuthors)
+	router.GET("/api/v1/authors/:author/albums", getAlbums)
+	router.GET("/api/v1/authors/:author/albums/:album/songs", getSongs)
 
-	return router.Handler
+	mux.Handle("/", http.FileServer(http.Dir("static")))
+	mux.Handle("/api/", router)
+
+	return mux
 }
 
-func getAuthors(ctx *fasthttp.RequestCtx) {
+func getAuthors(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	var authors = []string{
 		"ABBA",
 		"Moby",
@@ -29,15 +30,10 @@ func getAuthors(ctx *fasthttp.RequestCtx) {
 		"Группа Кино",
 	}
 
-	resp, err := json.Marshal(authors)
-	if err != nil {
-		panic(err)
-	}
-
-	ctx.Write(resp)
+	json.NewEncoder(w).Encode(authors)
 }
 
-func getAlbums(ctx *fasthttp.RequestCtx) {
+func getAlbums(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	var albums = []string{
 		"album 1",
 		"album 2",
@@ -45,15 +41,10 @@ func getAlbums(ctx *fasthttp.RequestCtx) {
 		"альбом 4",
 	}
 
-	resp, err := json.Marshal(albums)
-	if err != nil {
-		panic(err)
-	}
-
-	ctx.Write(resp)
+	json.NewEncoder(w).Encode(albums)
 }
 
-func getSongs(ctx *fasthttp.RequestCtx) {
+func getSongs(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	var songs = []string{
 		"Song 1",
 		"Song 2",
@@ -61,10 +52,5 @@ func getSongs(ctx *fasthttp.RequestCtx) {
 		"Песня 4",
 	}
 
-	resp, err := json.Marshal(songs)
-	if err != nil {
-		panic(err)
-	}
-
-	ctx.Write(resp)
+	json.NewEncoder(w).Encode(songs)
 }

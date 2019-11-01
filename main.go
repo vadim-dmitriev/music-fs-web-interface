@@ -1,9 +1,8 @@
 package main
 
 import (
+	"net/http"
 	"strconv"
-
-	"github.com/valyala/fasthttp"
 
 	"github.com/vadim-dmitriev/music-fs-web-interface/common"
 	"github.com/vadim-dmitriev/music-fs-web-interface/dir"
@@ -41,7 +40,7 @@ func (s *service) Run() {
 
 	s.logger.Info("Server running on " + hostAndPort)
 
-	if err := fasthttp.ListenAndServe(hostAndPort, newRouter()); err != nil {
+	if err := http.ListenAndServe(hostAndPort, newRouter()); err != nil {
 		s.logger.Fatal(err.Error())
 	}
 
