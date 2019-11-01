@@ -6,10 +6,10 @@
         <script type="text/javascript" src="js/App.js"></script>
     </head>
     <body>
-        <ul id="list">
-            <li>A</li>
-            <li>B</li>
-            <li>C</li>
+        <ul id="list-1">
+            <li v-for="item in items">
+                {{ item }}
+            </li>
         </ul>
     </body>
 </html>

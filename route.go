@@ -7,14 +7,14 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-func newRouter() *http.ServeMux {
+func newRouter(s *service) *http.ServeMux {
 	mux := http.NewServeMux()
 
 	// API
 	router := httprouter.New()
-	router.GET("/api/v1/authors", getAuthors)
-	router.GET("/api/v1/authors/:author/albums", getAlbums)
-	router.GET("/api/v1/authors/:author/albums/:album/songs", getSongs)
+	router.GET("/api/v1/authors", s.getAuthors)
+	router.GET("/api/v1/authors/:author/albums", s.getAlbums)
+	router.GET("/api/v1/authors/:author/albums/:album/songs", s.getSongs)
 
 	mux.Handle("/", http.FileServer(http.Dir("static")))
 	mux.Handle("/api/", router)
@@ -22,34 +22,56 @@ func newRouter() *http.ServeMux {
 	return mux
 }
 
-func getAuthors(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	var authors = []string{
-		"ABBA",
-		"Moby",
-		"Scorpions",
-		"Группа Кино",
+func (s *service) getAuthors(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	var authors = make([]string, 0)
+
+	// TODO: Избавиться от повторений исполнителей,
+	// если те содержаться в двух и более различных форматах.
+	for _, format := range s.root.Children {
+		for _, author := range format.Children {
+			authors = append(authors, author.Name)
+		}
 	}
 
 	json.NewEncoder(w).Encode(authors)
 }
 
-func getAlbums(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	var albums = []string{
-		"album 1",
-		"album 2",
-		"album 3",
-		"альбом 4",
+func (s *service) getAlbums(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	var albums = make([]string, 0)
+
+	// В результирующем списке альбомов исполнителя
+	// находятся все, что есть во всех форматах.
+	for _, format := range s.root.Children {
+		for _, author := range format.Children {
+
+			if p.ByName("author") == author.Name {
+				for _, album := range author.Children {
+					albums = append(albums, album.Name)
+				}
+			}
+		}
 	}
 
 	json.NewEncoder(w).Encode(albums)
 }
 
-func getSongs(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	var songs = []string{
-		"Song 1",
-		"Song 2",
-		"Song 3",
-		"Песня 4",
+func (s *service) getSongs(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	var songs = make([]string, 0)
+
+	for _, format := range s.root.Children {
+		for _, author := range format.Children {
+
+			if p.ByName("author") == author.Name {
+				for _, album := range author.Children {
+
+					if p.ByName("album") == album.Name {
+						for _, song := range album.Children {
+							songs = append(songs, song.Name)
+						}
+					}
+				}
+			}
+		}
 	}
 
 	json.NewEncoder(w).Encode(songs)

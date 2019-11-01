@@ -40,7 +40,7 @@ func (s *service) Run() {
 
 	s.logger.Info("Server running on " + hostAndPort)
 
-	if err := http.ListenAndServe(hostAndPort, newRouter()); err != nil {
+	if err := http.ListenAndServe(hostAndPort, newRouter(s)); err != nil {
 		s.logger.Fatal(err.Error())
 	}
 
