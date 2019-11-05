@@ -6,9 +6,9 @@
         <script type="text/javascript" src="js/App.js"></script>
     </head>
     <body>
-        <ul id="list-1">
-            <li v-for="item in items">
-                {{ item }}
+        <ul id="list-1" id="my-list">
+            <li ref="li" v-for="item in items" v-on:click="removeList(item)">
+                <a href="#">{{ item }}</a>
             </li>
         </ul>
     </body>

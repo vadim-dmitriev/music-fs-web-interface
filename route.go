@@ -29,7 +29,9 @@ func (s *service) getAuthors(w http.ResponseWriter, r *http.Request, p httproute
 	// если те содержаться в двух и более различных форматах.
 	for _, format := range s.root.Children {
 		for _, author := range format.Children {
+
 			authors = append(authors, author.Name)
+
 		}
 	}
 
@@ -46,7 +48,9 @@ func (s *service) getAlbums(w http.ResponseWriter, r *http.Request, p httprouter
 
 			if p.ByName("author") == author.Name {
 				for _, album := range author.Children {
+
 					albums = append(albums, album.Name)
+
 				}
 			}
 		}
@@ -66,7 +70,9 @@ func (s *service) getSongs(w http.ResponseWriter, r *http.Request, p httprouter.
 
 					if p.ByName("album") == album.Name {
 						for _, song := range album.Children {
+
 							songs = append(songs, song.Name)
+
 						}
 					}
 				}
