@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
@@ -12,9 +13,9 @@ func newRouter(s *service) *http.ServeMux {
 
 	// API
 	router := httprouter.New()
-	router.GET("/api/v1/authors", s.getAuthors)
-	router.GET("/api/v1/authors/:author/albums", s.getAlbums)
-	router.GET("/api/v1/authors/:author/albums/:album/songs", s.getSongs)
+	router.GET("/api/v1/authors", logMiddleware(s.getAuthors))
+	router.GET("/api/v1/authors/:author/albums", logMiddleware(s.getAlbums))
+	router.GET("/api/v1/authors/:author/albums/:album/songs", logMiddleware(s.getSongs))
 
 	mux.Handle("/", http.FileServer(http.Dir("static")))
 	mux.Handle("/api/", router)
@@ -81,4 +82,13 @@ func (s *service) getSongs(w http.ResponseWriter, r *http.Request, p httprouter.
 	}
 
 	json.NewEncoder(w).Encode(songs)
+}
+
+func logMiddleware(nextHandler httprouter.Handle) httprouter.Handle {
+
+	return func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+		log.Println(r.URL.RequestURI())
+		defer nextHandler(w, r, p)
+	}
+
 }

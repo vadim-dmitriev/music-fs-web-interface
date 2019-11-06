@@ -4,12 +4,16 @@
         <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
         <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
         <script type="text/javascript" src="js/App.js"></script>
+        <style>
+            
+        </style>
     </head>
     <body>
-        <ul id="list-1" id="my-list">
-            <li ref="li" v-for="item in items" v-on:click="removeList(item)">
+        <ul id="list-1">
+            <li ref="li" v-for="item in items" v-on:click="show(item)">
                 <a href="#">{{ item }}</a>
             </li>
         </ul>
+        <button id="btnBack" v-bind:style="{ display: isShow }" v-on:click="back">Назад</button>
     </body>
 </html>
