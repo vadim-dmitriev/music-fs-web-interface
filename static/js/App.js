@@ -2,49 +2,74 @@ window.onload = function () {
 
 
     var vm = new Vue({
-        el: '#list-1',
+        el: '#main',
 
         data: {
+            mode: '',
+            items: [],
+
             artist: '',
             album: '',
-            mode: 'None',
-            items: [],
+
+            isBtnBackShow: '',
         },
 
-        created: function () {        
-            this.show()
+        created: function () {
+            this.mode = 'artists'
+            this.isBtnBackShow = 'none'
         },
 
-        updated: function () {
-            console.log(this.mode);
-        },
-
-        methods : {
-
-            show: function (item) {
+        watch: {
+            mode: function () {
                 switch (this.mode) {
-                    case 'None':
-                        this.showArtists();
-                        this.mode = 'artists';
-                        btnBack.isShow = 'none'
-                        break;
-                    
                     case 'artists':
-                        this.artist = item;
-                        this.showAlbums(item);
-                        this.mode = 'albums';
-                        btnBack.isShow = 'block'
+                        this.showArtists();
+                        // this.mode = 'albums';
                         break;
                     
                     case 'albums':
-                        this.album = item;
-                        this.showSongs(item);
-                        this.mode = 'songs';
-                        btnBack.isShow = 'block'
+                        // this.artist = item;
+                        this.showAlbums(this.artist);
+                        this.isBtnBackShow = 'block'
+                        // this.mode = 'songs';
+
+                        break;
+                    
+                    case 'songs':
+                        // this.album = item;
+                        this.showSongs(this.album);
+                        this.isBtnBackShow = 'block'
                         break;
 
                     default:
                         alert("Mode is unknown: '" + this.mode + "'")
+                }
+            },
+        },
+
+        methods : {
+            next: function (item) {
+                if (this.mode == 'artists') {
+                    this.artist = item;
+                    this.mode = 'albums';
+                    return
+                }
+                if (this.mode == 'albums') {
+                    this.album = item;
+                    this.mode = 'songs';
+                    return
+                }
+            },
+
+            back: function () {
+                if (this.mode == 'songs') {
+                    this.album = '';
+                    this.mode = 'albums';
+                    return
+                }
+                if (this.mode == 'albums') {
+                    this.artist = '';
+                    this.mode = 'artists';
                 }
             },
 
@@ -68,20 +93,5 @@ window.onload = function () {
 
         }
     })
-
-
-    var btnBack = new Vue({
-        el: '#btnBack',
-        data: {
-            // isShow: this.parent.mode == 'artists' || this.parent.mode == 'None' ? 'none' : 'block'
-            isShow: ''
-        },
-        methods: {
-            back: function () {
-                vm.showArtists()
-            }
-        }
-    })
-
 
 }
