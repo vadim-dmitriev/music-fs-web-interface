@@ -1,1 +1,7 @@
-musicDir: "~/music" # Директория с музыкой
+server: # Параметры сервера
+  port: 8081
+  listen: "localhost"
+  debug: true
+
+musicDir: "Music" # Директория с музыкой
+
